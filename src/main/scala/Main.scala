@@ -18,5 +18,5 @@ A Tree with elements of type A is:
 
 enum Tree[A] {
   case Leaf(a: A)
-  case Node(left: A, right: A)
+  case Node(left: Tree[A], right: Tree[A])
 }
