@@ -1,3 +1,5 @@
+package exercises
+
 import scala.language.strictEquality
 
 @main def hello(): Unit =
@@ -25,7 +27,7 @@ Let’s get some practice with structural recursion and write some methods for T
 • map, which creates a Tree[B] given a function A => B
 Use whichever you prefer of pattern matching or dynamic dispatch to implement the methods.
 
-TODO: add unit tests
+TODO: add more detailed unit tests, including a builder for large trees.
  */
 
 enum Tree[A] derives CanEqual {
