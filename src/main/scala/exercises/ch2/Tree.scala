@@ -23,26 +23,34 @@ Let’s get some practice with structural recursion and write some methods for T
 • map, which creates a Tree[B] given a function A => B
 Use whichever you prefer of pattern matching or dynamic dispatch to implement the methods.
 
-TODO: add more detailed unit tests, including a builder for large trees.
+TODO: make `contains` tail recursive
+TODO: make `map` tail recursive
+TODO: add more detailed case-based tests
+TODO: add prop-based test for size
+TODO: add case-based test for Functor laws
+TODO: add property-based test for Functor laws
  */
 
 enum Tree[A] derives Eq, Show {
   case Leaf(a: A)
   case Node(left: Tree[A], right: Tree[A])
 
-  // TODO: @scala.annotation.tailrec
-  def size: BigInt = this match {
-    case Leaf(_)           => 1
-    case Node(left, right) => left.size + right.size
-  }
+  def size: BigInt =
+    @scala.annotation.tailrec
+    def sizeRecursive[A](sizeAccumulator: BigInt, remaining: List[Tree[A]]): BigInt =
+      remaining match
+        case Nil => sizeAccumulator
+        case head :: tail =>
+          head match
+            case Leaf(a)           => sizeRecursive(sizeAccumulator + 1, tail)
+            case Node(left, right) => sizeRecursive(sizeAccumulator, left :: right :: tail)
+    sizeRecursive(0, List(this))
 
-  // TODO: @scala.annotation.tailrec
   def contains(x: A)(using eq: Eq[A]): Boolean = this match {
     case Leaf(a)           => a === x
     case Node(left, right) => left.contains(x) || right.contains(x)
   }
 
-  // TODO: @scala.annotation.tailrec
   def map[B](f: A => B): Tree[B] = this match {
     case Leaf(x)           => Leaf(f(x))
     case Node(left, right) => Node(left.map(f), right.map(f))
