@@ -1,13 +1,6 @@
-package exercises
+package exercises.ch2
 
 import scala.language.strictEquality
-
-@main def hello(): Unit =
-  println("Hello world!")
-  println(msg)
-
-def msg = "I was compiled by Scala 3. :)"
-
 /*
 
 Ch. 2.2
