@@ -26,7 +26,7 @@ Use whichever you prefer of pattern matching or dynamic dispatch to implement th
 TODO: make `contains` tail recursive
 TODO: make `map` tail recursive
 TODO: add more detailed case-based tests
-TODO: add prop-based test for size
+TODO: add prop-based test for size (not sure, because it tests the generated function)
 TODO: add case-based test for Functor laws
 TODO: add property-based test for Functor laws
  */

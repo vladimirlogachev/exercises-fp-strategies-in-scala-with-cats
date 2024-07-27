@@ -6,16 +6,16 @@ import weaver._
 object TreeSuite extends SimpleIOSuite {
   import Tree._
 
-  def buildTree[A](size: BigInt, fillFromSize: BigInt => A): Tree[A] =
+  def buildTree[A](size: BigInt, fillFromIndex: BigInt => A): Tree[A] =
     @scala.annotation.tailrec
     def buildTreeRecursive(remainingSize: BigInt, accumulator: Tree[A]): Tree[A] = {
       if (remainingSize === 0) accumulator
       else {
-        val newTree = Node(accumulator, Leaf(fillFromSize(remainingSize)))
+        val newTree = Node(accumulator, Leaf(fillFromIndex(remainingSize - 1)))
         buildTreeRecursive(remainingSize - 1, newTree)
       }
     }
-    buildTreeRecursive(size - 1, Leaf(fillFromSize(size)))
+    buildTreeRecursive(size - 1, Leaf(fillFromIndex(size - 1)))
 
   pureTest("size") {
     val tree = Node(Leaf(1), Node(Leaf(2), Leaf(4)))
@@ -26,7 +26,7 @@ object TreeSuite extends SimpleIOSuite {
   pureTest("tree built of size 3") {
     val tree = buildTree(3, _.toString)
 
-    expect.eql(tree.size, 3: BigInt) and expect.eql(tree, Node(Node(Leaf("3"), Leaf("2")), Leaf("1")))
+    expect.eql(tree.size, 3: BigInt) and expect.eql(tree, Node(Node(Leaf("2"), Leaf("1")), Leaf("0")))
   }
 
   pureTest("size is stack-safe (supports large trees)") {
