@@ -1,6 +1,6 @@
 # exercises-fp-strategies-in-scala-with-cats
 
-Exercises from the book [Functional Programming Strategies In Scala with Cats](https://scalawithcats.com/) By Noel Welsh, 2024.
+Exercises from the book [Functional Programming Strategies In Scala with Cats](https://scalawithcats.com/) (Scala 3, `cats`, `cats-effect`, `weaver-test`). Also maintained as a demonstration project.
 
 ## Pre-requisites
 
