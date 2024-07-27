@@ -37,7 +37,7 @@ enum Tree[A] derives Eq, Show {
 
   def size: BigInt =
     @scala.annotation.tailrec
-    def sizeRecursive[A](sizeAccumulator: BigInt, remaining: List[Tree[A]]): BigInt =
+    def sizeRecursive(sizeAccumulator: BigInt, remaining: List[Tree[A]]): BigInt =
       remaining match
         case Nil => sizeAccumulator
         case head :: tail =>
@@ -46,10 +46,17 @@ enum Tree[A] derives Eq, Show {
             case Node(left, right) => sizeRecursive(sizeAccumulator, left :: right :: tail)
     sizeRecursive(0, List(this))
 
-  def contains(x: A)(using eq: Eq[A]): Boolean = this match {
-    case Leaf(a)           => a === x
-    case Node(left, right) => left.contains(x) || right.contains(x)
-  }
+  def contains(x: A)(using eq: Eq[A]): Boolean =
+    @scala.annotation.tailrec
+    def containsRecursive(remaining: List[Tree[A]]): Boolean =
+      remaining match
+        case Nil => false
+        case head :: tail =>
+          head match
+            case Leaf(a) if a === x => true
+            case Leaf(_)            => containsRecursive(tail)
+            case Node(left, right)  => containsRecursive(left :: right :: tail)
+    containsRecursive(List(this))
 
   def map[B](f: A => B): Tree[B] = this match {
     case Leaf(x)           => Leaf(f(x))
