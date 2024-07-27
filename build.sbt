@@ -8,7 +8,10 @@ lazy val root = project
     scalaVersion := scala3Version,
     run / fork   := true, // Makes exit codes work as expected
 
-    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0" % Test,
+    libraryDependencies += "org.typelevel"       %% "cats-core"         % "2.12.0",
+    libraryDependencies += "org.typelevel"       %% "cats-effect"       % "3.5.4",
+    libraryDependencies += "com.disneystreaming" %% "weaver-cats"       % "0.8.4" % Test,
+    libraryDependencies += "com.disneystreaming" %% "weaver-scalacheck" % "0.8.4" % Test,
 
     // Scalafix
     semanticdbEnabled := true,
