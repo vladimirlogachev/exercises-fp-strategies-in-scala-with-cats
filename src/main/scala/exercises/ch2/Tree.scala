@@ -1,6 +1,9 @@
 package exercises.ch2
 
-import scala.language.strictEquality
+import cats.Eq
+import cats.Show
+import cats.derived._
+import cats.implicits._
 /*
 
 Ch. 2.2
@@ -23,7 +26,7 @@ Use whichever you prefer of pattern matching or dynamic dispatch to implement th
 TODO: add more detailed unit tests, including a builder for large trees.
  */
 
-enum Tree[A] derives CanEqual {
+enum Tree[A] derives Eq, Show {
   case Leaf(a: A)
   case Node(left: Tree[A], right: Tree[A])
 
@@ -34,8 +37,8 @@ enum Tree[A] derives CanEqual {
   }
 
   // TODO: @scala.annotation.tailrec
-  def contains(x: A)(using eq: CanEqual[A, A]): Boolean = this match {
-    case Leaf(a)           => a == x
+  def contains(x: A)(using eq: Eq[A]): Boolean = this match {
+    case Leaf(a)           => a === x
     case Node(left, right) => left.contains(x) || right.contains(x)
   }
 

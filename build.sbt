@@ -9,6 +9,7 @@ lazy val root = project
     run / fork   := true, // Makes exit codes work as expected
 
     libraryDependencies += "org.typelevel"       %% "cats-core"         % "2.12.0",
+    libraryDependencies += "org.typelevel"       %% "kittens"           % "3.3.0",
     libraryDependencies += "org.typelevel"       %% "cats-effect"       % "3.5.4",
     libraryDependencies += "com.disneystreaming" %% "weaver-cats"       % "0.8.4" % Test,
     libraryDependencies += "com.disneystreaming" %% "weaver-scalacheck" % "0.8.4" % Test,
