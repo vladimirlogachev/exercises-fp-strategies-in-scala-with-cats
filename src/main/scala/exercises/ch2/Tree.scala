@@ -23,7 +23,7 @@ Let’s get some practice with structural recursion and write some methods for T
 • map, which creates a Tree[B] given a function A => B
 Use whichever you prefer of pattern matching or dynamic dispatch to implement the methods.
 
-TODO: make `contains` tail recursive
+TODO: refactor tail recursion in a smarter way
 TODO: make `map` tail recursive
 TODO: add more detailed case-based tests
 TODO: add prop-based test for size (not sure, because it tests the generated function)

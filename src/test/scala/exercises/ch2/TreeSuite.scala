@@ -17,7 +17,7 @@ object TreeSuite extends SimpleIOSuite {
     }
     buildTreeLeftRecursive(size - 1, Leaf(fillFromIndex(size - 1)))
 
-  pureTest("size") {
+  pureTest("size (simple)") {
     val tree = Node(Leaf(1), Node(Leaf(2), Leaf(4)))
 
     expect.eql(tree.size, 3: BigInt)
@@ -37,7 +37,7 @@ object TreeSuite extends SimpleIOSuite {
     expect.eql(tree.size, size)
   }
 
-  pureTest("contains") {
+  pureTest("contains (simple)") {
     val tree = Node(Leaf(1), Node(Leaf(2), Leaf(4)))
 
     expect(tree.contains(1)) and expect(tree.contains(2)) and expect(!tree.contains(3))
@@ -47,7 +47,7 @@ object TreeSuite extends SimpleIOSuite {
     val size = BigInt(1_000_000)
     val tree = buildTreeLeft(size, identity)
 
-    expect(tree.contains(0)) and expect(tree.contains(size - 1))
+    expect(tree.contains(0)) and expect(tree.contains(size - 1)) and expect(!tree.contains(size))
   }
 
   pureTest("map") {
@@ -55,6 +55,14 @@ object TreeSuite extends SimpleIOSuite {
     val stringTree = Node(Leaf("1"), Node(Leaf("2"), Leaf("4")))
 
     expect.eql(intTree.map(_.toString), stringTree)
+  }
+
+  pureTest("map: identity") {
+    val size = BigInt(10)
+    // val size = BigInt(1_000_000)
+    val tree = buildTreeLeft(size, identity)
+
+    expect.eql(tree.map(identity), tree)
   }
 
 }
