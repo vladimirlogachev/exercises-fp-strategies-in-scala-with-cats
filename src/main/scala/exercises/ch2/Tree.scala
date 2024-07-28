@@ -1,10 +1,13 @@
 package exercises.ch2
 
+import scala.util.control.TailCalls.TailRec
+import scala.util.control.TailCalls.done
+import scala.util.control.TailCalls.tailcall
+
 import cats.Eq
 import cats.Show
 import cats.derived._
 import cats.implicits._
-import scala.util.control.TailCalls.{done, tailcall, TailRec}
 /*
 
 Ch. 2.2
@@ -25,9 +28,8 @@ Let’s get some practice with structural recursion and write some methods for T
 Use whichever you prefer of pattern matching or dynamic dispatch to implement the methods.
 
 TODO: refactor tail recursion in a smarter way
-TODO: improve mapCont using TailCalls
+TODO: try to improve mapCont using TailCalls
 TODO: add more detailed case-based tests
-TODO: add prop-based test for size (not sure, because it tests the generated function)
 TODO: add case-based test for Functor laws
 TODO: add property-based test for Functor laws
  */
