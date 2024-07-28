@@ -4,6 +4,7 @@ import cats.Eq
 import cats.Show
 import cats.derived._
 import cats.implicits._
+
 /*
 
 Ch. 2.2

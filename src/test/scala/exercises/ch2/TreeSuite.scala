@@ -50,11 +50,18 @@ object TreeSuite extends SimpleIOSuite {
     expect(tree.contains(0)) and expect(tree.contains(size - 1)) and expect(!tree.contains(size))
   }
 
-  pureTest("map") {
+  pureTest("map simple 1") {
     val intTree    = Node(Leaf(1), Node(Leaf(2), Leaf(4)))
     val stringTree = Node(Leaf("1"), Node(Leaf("2"), Leaf("4")))
 
     expect.eql(intTree.map(_.toString), stringTree)
+  }
+
+  pureTest("map simple 2") {
+    val intTree    = Node(Node(Leaf(1), Leaf(2)), Leaf(4))
+    val stringTree = Node(Node(Leaf("1"), Leaf("2")), Leaf("4"))
+
+    expect(intTree.map(_.toString) === stringTree)
   }
 
   pureTest("map: identity") {
