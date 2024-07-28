@@ -61,22 +61,6 @@ enum Tree[A] derives Eq, Show {
             case Node(left, right)  => containsRecursive(left :: right :: tail)
     containsRecursive(List(this))
 
-  @deprecated
-  def mapNaive[B](f: A => B): Tree[B] = this match {
-    case Leaf(x)           => Leaf(f(x))
-    case Node(left, right) => Node(left.map(f), right.map(f))
-  }
-
-  @deprecated
-  def mapCont[B](f: A => B): Tree[B] =
-    // Note: unable to add @annotation.tailrec
-    def mapRecursive(tree: Tree[A], cont: Tree[B] => Tree[B]): Tree[B] =
-      tree match
-        case Leaf(a) => cont(Leaf(f(a)))
-        case Node(left, right) =>
-          mapRecursive(left, leftResult => mapRecursive(right, rightResult => cont(Node(leftResult, rightResult))))
-    mapRecursive(this, identity)
-
   def map[B](f: A => B): Tree[B] =
     // Note: unable to add @annotation.tailrec, but tests prove its safety
     def mapRecursive(tree: Tree[A]): TailRec[Tree[B]] = tree match
