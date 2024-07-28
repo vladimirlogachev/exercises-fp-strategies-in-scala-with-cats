@@ -50,26 +50,34 @@ object TreeSuite extends SimpleIOSuite {
     expect(tree.contains(0)) and expect(tree.contains(size - 1)) and expect(!tree.contains(size))
   }
 
-  pureTest("map simple 1") {
+  pureTest("map simple case 1") {
     val intTree    = Node(Leaf(1), Node(Leaf(2), Leaf(4)))
     val stringTree = Node(Leaf("1"), Node(Leaf("2"), Leaf("4")))
 
     expect.eql(intTree.map(_.toString), stringTree)
   }
 
-  pureTest("map simple 2") {
+  pureTest("map simple case 2") {
     val intTree    = Node(Node(Leaf(1), Leaf(2)), Leaf(4))
     val stringTree = Node(Node(Leaf("1"), Leaf("2")), Leaf("4"))
 
-    expect(intTree.map(_.toString) === stringTree)
+    expect.eql(intTree.map(_.toString), stringTree)
   }
 
-  pureTest("map: identity") {
+  pureTest("map: identity, small tree") {
     val size = BigInt(10)
-    // val size = BigInt(1_000_000)
     val tree = buildTreeLeft(size, identity)
 
     expect.eql(tree.map(identity), tree)
+  }
+
+  pureTest("map: identity, large tree") {
+    val size       = BigInt(1_000_000)
+    val tree       = buildTreeLeft(size, identity)
+    val mappedTree = tree.map(identity)
+
+    // Note: no direct comparison for large trees because derived eq instances are not stack safe, as well as `equals`
+    expect.eql(mappedTree.size, size)
   }
 
 }

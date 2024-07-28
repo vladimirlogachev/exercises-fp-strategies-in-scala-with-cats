@@ -4,7 +4,7 @@ import cats.Eq
 import cats.Show
 import cats.derived._
 import cats.implicits._
-
+import scala.util.control.TailCalls.{done, tailcall, TailRec}
 /*
 
 Ch. 2.2
@@ -25,7 +25,7 @@ Let’s get some practice with structural recursion and write some methods for T
 Use whichever you prefer of pattern matching or dynamic dispatch to implement the methods.
 
 TODO: refactor tail recursion in a smarter way
-TODO: make `map` tail recursive
+TODO: improve mapCont using TailCalls
 TODO: add more detailed case-based tests
 TODO: add prop-based test for size (not sure, because it tests the generated function)
 TODO: add case-based test for Functor laws
@@ -37,7 +37,7 @@ enum Tree[A] derives Eq, Show {
   case Node(left: Tree[A], right: Tree[A])
 
   def size: BigInt =
-    @scala.annotation.tailrec
+    @annotation.tailrec
     def sizeRecursive(sizeAccumulator: BigInt, remaining: List[Tree[A]]): BigInt =
       remaining match
         case Nil => sizeAccumulator
@@ -48,7 +48,7 @@ enum Tree[A] derives Eq, Show {
     sizeRecursive(0, List(this))
 
   def contains(x: A)(using eq: Eq[A]): Boolean =
-    @scala.annotation.tailrec
+    @annotation.tailrec
     def containsRecursive(remaining: List[Tree[A]]): Boolean =
       remaining match
         case Nil => false
@@ -59,18 +59,31 @@ enum Tree[A] derives Eq, Show {
             case Node(left, right)  => containsRecursive(left :: right :: tail)
     containsRecursive(List(this))
 
-  def map[B](f: A => B): Tree[B] = this match {
+  @deprecated
+  def mapNaive[B](f: A => B): Tree[B] = this match {
     case Leaf(x)           => Leaf(f(x))
     case Node(left, right) => Node(left.map(f), right.map(f))
   }
 
+  @deprecated
   def mapCont[B](f: A => B): Tree[B] =
-    // @scala.annotation.tailrec
+    // Note: unable to add @annotation.tailrec
     def mapRecursive(tree: Tree[A], cont: Tree[B] => Tree[B]): Tree[B] =
       tree match
         case Leaf(a) => cont(Leaf(f(a)))
         case Node(left, right) =>
           mapRecursive(left, leftResult => mapRecursive(right, rightResult => cont(Node(leftResult, rightResult))))
     mapRecursive(this, identity)
+
+  def map[B](f: A => B): Tree[B] =
+    // Note: unable to add @annotation.tailrec, but tests prove its safety
+    def mapRecursive(tree: Tree[A]): TailRec[Tree[B]] = tree match
+      case Leaf(a) => done(Leaf(f(a)))
+      case Node(left, right) =>
+        for {
+          leftResult  <- tailcall(mapRecursive(left))
+          rightResult <- tailcall(mapRecursive(right))
+        } yield Node(leftResult, rightResult)
+    mapRecursive(this).result
 
 }
