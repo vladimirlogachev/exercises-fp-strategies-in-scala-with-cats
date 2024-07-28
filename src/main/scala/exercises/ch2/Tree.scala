@@ -64,4 +64,13 @@ enum Tree[A] derives Eq, Show {
     case Node(left, right) => Node(left.map(f), right.map(f))
   }
 
+  def mapCont[B](f: A => B): Tree[B] =
+    // @scala.annotation.tailrec
+    def mapRecursive(tree: Tree[A], cont: Tree[B] => Tree[B]): Tree[B] =
+      tree match
+        case Leaf(a) => cont(Leaf(f(a)))
+        case Node(left, right) =>
+          mapRecursive(left, leftResult => mapRecursive(right, rightResult => cont(Node(leftResult, rightResult))))
+    mapRecursive(this, identity)
+
 }
