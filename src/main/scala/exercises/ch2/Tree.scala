@@ -27,8 +27,8 @@ Let’s get some practice with structural recursion and write some methods for T
 • map, which creates a Tree[B] given a function A => B
 Use whichever you prefer of pattern matching or dynamic dispatch to implement the methods.
 
-TODO: refactor tail recursion in a smarter way
-TODO: try to improve mapCont using TailCalls
+TODO: consider using TailRec for `contains`, but avoid traversing the entire tree (return fast)
+TODO: try to improve cont-based `map` using TailRec
 TODO: add more detailed case-based tests
 TODO: add case-based test for Functor laws
 TODO: add property-based test for Functor laws
@@ -38,16 +38,16 @@ enum Tree[A] derives Eq, Show {
   case Leaf(a: A)
   case Node(left: Tree[A], right: Tree[A])
 
-  def size: BigInt =
-    @annotation.tailrec
-    def sizeRecursive(sizeAccumulator: BigInt, remaining: List[Tree[A]]): BigInt =
-      remaining match
-        case Nil => sizeAccumulator
-        case head :: tail =>
-          head match
-            case Leaf(a)           => sizeRecursive(sizeAccumulator + 1, tail)
-            case Node(left, right) => sizeRecursive(sizeAccumulator, left :: right :: tail)
-    sizeRecursive(0, List(this))
+  def size[B]: BigInt =
+    // Note: unable to add @annotation.tailrec, but tests prove its safety
+    def sizeRecursive(tree: Tree[A]): TailRec[BigInt] = tree match
+      case Leaf(a) => done(1: BigInt)
+      case Node(left, right) =>
+        for {
+          leftResult  <- tailcall(sizeRecursive(left))
+          rightResult <- tailcall(sizeRecursive(right))
+        } yield leftResult + rightResult
+    sizeRecursive(this).result
 
   def contains(x: A)(using eq: Eq[A]): Boolean =
     @annotation.tailrec
