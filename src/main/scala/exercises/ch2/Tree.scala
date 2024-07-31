@@ -1,8 +1,6 @@
 package exercises.ch2
 
-import scala.util.control.TailCalls.TailRec
-import scala.util.control.TailCalls.done
-import scala.util.control.TailCalls.tailcall
+import scala.util.control.TailCalls._
 
 import cats.Eq
 import cats.Show
