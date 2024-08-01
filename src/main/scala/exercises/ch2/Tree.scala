@@ -29,10 +29,27 @@ TODO: consider using TailRec for `contains`, but avoid traversing the entire tre
 TODO: try to improve cont-based `map` using TailRec
 TODO: add more detailed case-based tests
 TODO: add case-based test for Functor laws
+TODO: check Eq instance?
+TODO: instance of Arbitrary for Tree?
 TODO: add property-based test for Functor laws
  */
 
-enum Tree[A] derives Eq, Show {
+object Tree {
+  given [A](using eq: Eq[A]): Eq[Tree[A]] with
+    def eqv(tree1: Tree[A], tree2: Tree[A]): Boolean =
+      def eqvRecursive(t1: Tree[A], t2: Tree[A]): TailRec[Boolean] = (t1, t2) match
+        case (Leaf(a), Leaf(b)) => done(a === b)
+        case (Node(left1, right1), Node(left2, right2)) =>
+          for {
+            leftResult  <- tailcall(eqvRecursive(left1, left2))
+            rightResult <- tailcall(eqvRecursive(right1, right2))
+          } yield leftResult && rightResult
+        case _ => done(false)
+      eqvRecursive(tree1, tree2).result
+
+}
+
+enum Tree[A] derives Show {
   case Leaf(a: A)
   case Node(left: Tree[A], right: Tree[A])
 

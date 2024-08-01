@@ -72,12 +72,10 @@ object TreeSuite extends FunSuite {
   }
 
   test("map: identity, large tree") {
-    val size       = BigInt(1_000_000)
-    val tree       = buildTreeLeft(size, identity)
-    val mappedTree = tree.map(identity)
+    val size = BigInt(1_000_000)
+    val tree = buildTreeLeft(size, identity)
 
-    // Note: no direct comparison for large trees because derived eq instances are not stack safe, as well as `equals`
-    expect.eql(mappedTree.size, size)
+    expect.eql(tree.map(identity), tree)
   }
 
 }
