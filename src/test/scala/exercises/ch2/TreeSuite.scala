@@ -2,7 +2,8 @@ package exercises.ch2
 
 import cats.implicits._
 import weaver._
-import Tree._
+
+import exercises.ch2.Tree._
 
 object Helpers {
   def buildTreeLeft[A](size: BigInt, fillFromIndex: BigInt => A): Tree[A] =
