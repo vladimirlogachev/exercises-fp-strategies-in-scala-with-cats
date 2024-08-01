@@ -3,19 +3,37 @@ package exercises.ch2
 import cats.implicits._
 import weaver._
 
-object TreeSuite extends FunSuite {
-  import Tree._
+import Tree._
 
-  def buildTreeLeft[A](size: BigInt, fillFromIndex: BigInt => A): Tree[A] =
-    @scala.annotation.tailrec
-    def buildTreeLeftRecursive(remainingSize: BigInt, accumulator: Tree[A]): Tree[A] = {
-      if (remainingSize === 0) accumulator
-      else {
-        val newTree = Node(accumulator, Leaf(fillFromIndex(remainingSize - 1)))
-        buildTreeLeftRecursive(remainingSize - 1, newTree)
-      }
+def buildTreeLeft[A](size: BigInt, fillFromIndex: BigInt => A): Tree[A] =
+  @scala.annotation.tailrec
+  def buildTreeLeftRecursive(remainingSize: BigInt, accumulator: Tree[A]): Tree[A] = {
+    if (remainingSize === 0) accumulator
+    else {
+      val newTree = Node(accumulator, Leaf(fillFromIndex(remainingSize - 1)))
+      buildTreeLeftRecursive(remainingSize - 1, newTree)
     }
-    buildTreeLeftRecursive(size - 1, Leaf(fillFromIndex(size - 1)))
+  }
+  buildTreeLeftRecursive(size - 1, Leaf(fillFromIndex(size - 1)))
+
+object BuildTreeSuite extends SimpleIOSuite {
+
+  loggedTest("buildTreeLeft example") { log =>
+    val size                       = BigInt(3)
+    val tree: Tree[BigInt]         = buildTreeLeft(size, identity)
+    val expectedTree: Tree[BigInt] = Node(Node(Leaf(2), Leaf(1)), Leaf(0))
+    for {
+      _ <- log.info(tree.toString)
+    } yield expect.eql(tree, expectedTree)
+
+  }
+
+}
+
+object TreeSuite extends FunSuite {
+
+  val largeSize = BigInt(1_000_000)
+  val largeTree = buildTreeLeft(largeSize, identity)
 
   test("size (simple)") {
     val tree = Node(Leaf(1), Node(Leaf(2), Leaf(4)))
@@ -31,10 +49,7 @@ object TreeSuite extends FunSuite {
   }
 
   test("size is stack-safe (supports large trees)") {
-    val size = BigInt(1_000_000)
-    val tree = buildTreeLeft(size, identity)
-
-    expect.eql(tree.size, size)
+    expect.eql(largeTree.size, largeSize)
   }
 
   test("contains (simple)") {
@@ -43,11 +58,12 @@ object TreeSuite extends FunSuite {
     expect(tree.contains(1)) and expect(tree.contains(2)) and expect(!tree.contains(3))
   }
 
-  test("contains is stack-safe (supports large trees)") {
-    val size = BigInt(1_000_000)
-    val tree = buildTreeLeft(size, identity)
+  test("contains is stack-safe (supports large trees) (expected slow)") {
+    expect(largeTree.contains(0))
+  }
 
-    expect(tree.contains(0)) and expect(tree.contains(size - 1)) and expect(!tree.contains(size))
+  test("contains is stack-safe (supports large trees) (expected quick)") {
+    expect(largeTree.contains(largeSize - 1))
   }
 
   test("map simple case 1") {
@@ -72,10 +88,7 @@ object TreeSuite extends FunSuite {
   }
 
   test("map: identity, large tree") {
-    val size = BigInt(1_000_000)
-    val tree = buildTreeLeft(size, identity)
-
-    expect.eql(tree.map(identity), tree)
+    expect.eql(largeTree.map(identity), largeTree)
   }
 
 }
