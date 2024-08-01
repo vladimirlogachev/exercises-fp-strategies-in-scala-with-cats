@@ -8,7 +8,7 @@ import cats.derived._
 import cats.implicits._
 /*
 
-Ch. 2.2
+Ch. 2.2, 2.3
 
 Exercise: Tree
 To gain a bit of practice defining algebraic data types, code the following description in Scala
@@ -16,22 +16,12 @@ To gain a bit of practice defining algebraic data types, code the following desc
 A Tree with elements of type A is:
 • a Leaf with a value of typeA; or
 • a Node with a left and right child, which are both Trees with elements of type A.
- */
 
-/*
 Let’s get some practice with structural recursion and write some methods for Tree. Implement
 • size, which returns the number of values (Leafs) stored in the Tree;
 • contains, which returns true if the Tree contains a given element of type A, and false otherwise; and
 • map, which creates a Tree[B] given a function A => B
 Use whichever you prefer of pattern matching or dynamic dispatch to implement the methods.
-
-TODO: consider using TailRec for `contains`, but avoid traversing the entire tree (return fast)
-TODO: try to improve cont-based `map` using TailRec
-TODO: add more detailed case-based tests
-TODO: add case-based test for Functor laws
-TODO: check Eq instance?
-TODO: instance of Arbitrary for Tree?
-TODO: add property-based test for Functor laws
  */
 
 object Tree {
@@ -53,16 +43,16 @@ enum Tree[A] derives Show {
   case Leaf(a: A)
   case Node(left: Tree[A], right: Tree[A])
 
-  def size[B]: BigInt =
-    // Note: unable to add @annotation.tailrec, but tests prove its safety
-    def sizeRecursive(tree: Tree[A]): TailRec[BigInt] = tree match
-      case Leaf(a) => done(1: BigInt)
-      case Node(left, right) =>
-        for {
-          leftResult  <- tailcall(sizeRecursive(left))
-          rightResult <- tailcall(sizeRecursive(right))
-        } yield leftResult + rightResult
-    sizeRecursive(this).result
+  def size: BigInt =
+    @annotation.tailrec
+    def sizeRecursive(sizeAccumulator: BigInt, remaining: List[Tree[A]]): BigInt =
+      remaining match
+        case Nil => sizeAccumulator
+        case head :: tail =>
+          head match
+            case Leaf(a)           => sizeRecursive(sizeAccumulator + 1, tail)
+            case Node(left, right) => sizeRecursive(sizeAccumulator, left :: right :: tail)
+    sizeRecursive(0, List(this))
 
   def contains(x: A)(using eq: Eq[A]): Boolean =
     @annotation.tailrec
