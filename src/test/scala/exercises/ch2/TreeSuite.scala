@@ -1,5 +1,7 @@
 package exercises.ch2
 
+import scala.util.control.TailCalls._
+
 import cats.implicits._
 import weaver._
 
@@ -17,20 +19,61 @@ object Helpers {
     }
     buildTreeLeftRecursive(size - 1, Leaf(fillFromIndex(size - 1)))
 
+    /** Height can be 0 or greater */
+
+  def buildTreeWide[A](heightEdges: BigInt): Tree[String] =
+    def loop(edgePath: String, remainingHeight: BigInt): TailRec[Tree[String]] =
+      if (remainingHeight === 0) done(Leaf(edgePath))
+      else
+        for {
+          leftResult  <- tailcall(loop(edgePath ++ "L", remainingHeight - 1))
+          rightResult <- tailcall(loop(edgePath ++ "R", remainingHeight - 1))
+        } yield Node(leftResult, rightResult)
+    loop("", heightEdges).result
+
+  def buildTreeRight[A](heightEdges: BigInt): Tree[String] =
+    def loop(edgePath: String, remainingHeight: BigInt): TailRec[Tree[String]] =
+      if (remainingHeight === 0) done(Leaf(edgePath))
+      else
+        for {
+          leftResult  <- done(Leaf(edgePath ++ "L"))
+          rightResult <- tailcall(loop(edgePath ++ "R", remainingHeight - 1))
+        } yield Node(leftResult, rightResult)
+    loop("", heightEdges).result
+
   val largeSize = BigInt(1_000_000)
   val largeTree = buildTreeLeft(largeSize, identity)
+
+  val largeHeight    = BigInt(10)
+  val largeTreeWide  = buildTreeWide(largeHeight)
+  val largeTreeRight = buildTreeRight(largeHeight)
 }
 
 object BuildTreeSuite extends SimpleIOSuite {
 
-  loggedTest("Helpers.buildTreeLeft example") { log =>
+  pureTest("buildTreeLeft example") {
     val size                       = BigInt(3)
     val tree: Tree[BigInt]         = Helpers.buildTreeLeft(size, identity)
     val expectedTree: Tree[BigInt] = Node(Node(Leaf(2), Leaf(1)), Leaf(0))
-    for {
-      _ <- log.info(tree.toString)
-    } yield expect.eql(tree, expectedTree)
+    expect.eql(tree, expectedTree)
+  }
 
+  pureTest("buildTreeWide 0") {
+    val tree         = Helpers.buildTreeWide(0)
+    val expectedTree = Leaf("")
+    expect.eql(tree, expectedTree)
+  }
+
+  pureTest("buildTreeWide 1") {
+    val tree         = Helpers.buildTreeWide(1)
+    val expectedTree = Node(Leaf("L"), Leaf("R"))
+    expect.eql(tree, expectedTree)
+  }
+
+  pureTest("buildTreeWide 2") {
+    val tree         = Helpers.buildTreeWide(2)
+    val expectedTree = Node(Node(Leaf("LL"), Leaf("LR")), Node(Leaf("RL"), Leaf("RR")))
+    expect.eql(tree, expectedTree)
   }
 
 }
