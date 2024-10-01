@@ -10,6 +10,7 @@ on:
       - opened
       # "synchronize" means new commits pushed to the HEAD of the pull request branch
       - synchronize
+  merge_group:
 
 permissions: read-all
 
