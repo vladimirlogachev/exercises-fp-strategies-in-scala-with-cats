@@ -15,8 +15,8 @@ lazy val root = project
     ),
     // tests
     libraryDependencies ++= Seq(
-      "com.disneystreaming" %% "weaver-cats"       % Versions.weaver,
-      "com.disneystreaming" %% "weaver-scalacheck" % Versions.weaver
+      "org.typelevel" %% "weaver-cats"       % Versions.weaver,
+      "org.typelevel" %% "weaver-scalacheck" % Versions.weaver
     ).map(_ % Test),
     // Scalafix
     semanticdbEnabled := true,
