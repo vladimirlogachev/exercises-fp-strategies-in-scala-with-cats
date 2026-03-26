@@ -28,7 +28,7 @@ object Tree {
   given [A](using eq: Eq[A]): Eq[Tree[A]] with
     def eqv(tree1: Tree[A], tree2: Tree[A]): Boolean =
       def eqvRecursive(t1: Tree[A], t2: Tree[A]): TailRec[Boolean] = (t1, t2) match
-        case (Leaf(a), Leaf(b)) => done(a === b)
+        case (Leaf(a), Leaf(b))                         => done(a === b)
         case (Node(left1, right1), Node(left2, right2)) =>
           for {
             leftResult  <- tailcall(eqvRecursive(left1, left2))
@@ -47,7 +47,7 @@ enum Tree[A] derives Show {
     @annotation.tailrec
     def sizeRecursive(sizeAccumulator: BigInt, remaining: List[Tree[A]]): BigInt =
       remaining match
-        case Nil => sizeAccumulator
+        case Nil          => sizeAccumulator
         case head :: tail =>
           head match
             case Leaf(a)           => sizeRecursive(sizeAccumulator + 1, tail)
@@ -58,7 +58,7 @@ enum Tree[A] derives Show {
     @annotation.tailrec
     def containsRecursive(remaining: List[Tree[A]]): Boolean =
       remaining match
-        case Nil => false
+        case Nil          => false
         case head :: tail =>
           head match
             case Leaf(a) if a === x => true
@@ -69,7 +69,7 @@ enum Tree[A] derives Show {
   def map[B](f: A => B): Tree[B] =
     // Note: unable to add @annotation.tailrec, but tests prove its safety
     def mapRecursive(tree: Tree[A]): TailRec[Tree[B]] = tree match
-      case Leaf(a) => done(Leaf(f(a)))
+      case Leaf(a)           => done(Leaf(f(a)))
       case Node(left, right) =>
         for {
           leftResult  <- tailcall(mapRecursive(left))

@@ -1,4 +1,4 @@
-val scala3Version = "3.5.2"
+val scala3Version = "3.8.2"
 
 lazy val root = project
   .in(file("."))
@@ -15,8 +15,8 @@ lazy val root = project
     ),
     // tests
     libraryDependencies ++= Seq(
-      "com.disneystreaming" %% "weaver-cats"       % Versions.weaver,
-      "com.disneystreaming" %% "weaver-scalacheck" % Versions.weaver
+      "org.typelevel" %% "weaver-cats"       % Versions.weaver,
+      "org.typelevel" %% "weaver-scalacheck" % Versions.weaver
     ).map(_ % Test),
     // Scalafix
     semanticdbEnabled := true,
